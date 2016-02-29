@@ -325,6 +325,6 @@ echo versao do CyanoGenMod muito antiga, desculpe!
 pause>nul
 exit
 :DRIVER
-start .\drivers\drive\ADBDriverInstaller.exe
 if if %ad%==0 .\drivers\wget\bin\wget.exe http://adbdriver.com/upload/adbdriver.zip
+start .\drivers\drive\ADBDriverInstaller.exe
 goto DRIVER!
