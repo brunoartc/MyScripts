@@ -1,4 +1,7 @@
 @echo off
+::IF YOU ARE ADVANCED USER CHANGE 0 to 1 FROM NEXT LINE
+set ad=0
+if %ad%==1 echo on
 title CM
 set camfastboot=.\drivers\adb\fastboot.exe
 set camadb=.\drivers\adb\adb.exe
@@ -8,6 +11,15 @@ cd arquivos
 rename open_gapps*.zip open_gapps.zip
 cd..
 ::goto INICIO
+if %ad%==0 echo.
+if %ad%==0 echo Precisa dos drivers para o celular S/N 
+if %ad%==0 echo S - Se for a primeira vez que voce abre o programa
+if %ad%==0 echo.
+if %ad%==0 set /p driv=
+if %ad%==0 if %driv%==S goto DRIVER
+if %ad%==0 if %driv%==s goto DRIVER
+:DRIVER!
+
 echo.
 echo ------------------------------------------------------------------
 echo                             AVISO
@@ -17,8 +29,8 @@ echo seu dispositivo sera reiniciado logo em seguida automaticamente
 echo ------------------------------------------------------------------
 echo.
 echo esperando por dispositivo....
-%camadb% wait-for-device
-%camadb% reboot-bootloader
+if %ad%==0 %camadb% wait-for-device
+if %ad%==0 %camadb% reboot-bootloader
 cls
 echo.
 echo Seu celular foi reiniciado com sucesso...
@@ -224,40 +236,71 @@ echo.
 echo DESEJA FAZER ROOT? "S/N"
 echo.
 set /p root=
-if %rootr%==S %camfastboot% goto ROOT
-if %rootr%==s %camfastboot% goto ROOT
+if %rootr%==S goto ROOT
+if %rootr%==s goto ROOT
 timeout 5
+
+
+
+:FLASH1
 cls
 echo.
-echo ATUALIZANDO CELULAR
+title ATUALIZANDO CELULAR
 echo.
 set gapps=.\arquivos\open_gapps-%gapps%.zip
-%camfastboot% update %cm%
-%camfastboot% update %gapps%
+::%camfastboot% update %cm% "BROKE"
+::%camfastboot% update %gapps% "BROKE"
+%camfastboot% reboot
+%camadb% wait-for-device
+%camadb% reboot recovery
+cls
+echo ------------------------------------------------------------------
+echo                             AVISO
+echo SELECIONE A OPCAO "Install zip/Aplly update" em seguida "Apply update/install zip from sideload"
+echo e precione uma tecla para continuar
+echo ------------------------------------------------------------------
 echo.
+pause>nul
+%camadb% sideload %cm%
+cls
+echo.
+echo ------------------------------------------------------------------
+echo                             AVISO
+echo AGUARDE O FINAL DA INSTALACAO, ATE DESAPARECER A OPCAO "Cancel sideload" e novamente
+echo SELECIONE A OPCAO "Install zip/Aplly update" em seguida "Apply update/install zip from sideload"
+echo e precione uma tecla para continuar
+echo ------------------------------------------------------------------
+pause>nul
+%camadb% sideload %gapps%
+cls
+echo.
+echo ------------------------------------------------------------------
+echo                             AVISO
+echo AGUARDE O FINAL DA INSTALACAO, ATE DESAPARECER A OPCAO "Cancel sideload" e novamente
+echo seu celular sera reniciado e estara pronto para uso
+echo ------------------------------------------------------------------
 %camfastboot% reboot
 exit
+
+
+
+
 :ROOT
 echo.
 echo ----- CF-Auto-Root-falconumtsds-falconretbrds-xt1033 -----
 echo.
 echo If you are on Android 5.0 or newer, please make sure the "Allow OEM Unlock"
 echo option (if present) is enabled in "Settings->Developer Options".
-::%camfastboot% oem unlock 1>NUL 2>NUL
-::%camfastboot% oem unlock 1>NUL 2>NUL
-::%camfastboot% flashing unlock 1>NUL 2>NUL
-::%camfastboot% flashing unlock 1>NUL 2>NUL
+::%camfastboot% oem unlock 1>NUL 2>NUL "POINTLESS"
+::%camfastboot% oem unlock 1>NUL 2>NUL "POINTLESS"
+::%camfastboot% flashing unlock 1>NUL 2>NUL "POINTLESS"
+::%camfastboot% flashing unlock 1>NUL 2>NUL "POINTLESS"
 %camfastboot% boot .\drivers\root\CF-AutoRoot.img
 echo by ChainFire
 echo.
 timeout 3
 cls
-echo.
-echo ATUALIZANDO CELULAR...AGUARDE
-echo.
-set gapps=.\arquivos\open_gapps-%gapps%.zip
-%camfastboot% update %cm%
-%camfastboot% update %gapps%
+goto FLASH1
 pause>nul
 exit
 
@@ -281,23 +324,7 @@ exit
 echo versao do CyanoGenMod muito antiga, desculpe!
 pause>nul
 exit
-
-:ah
-%camadb% reboot recovery
-::cls
-echo entre no modo sideload!
-pause
-
-
-
-%camadb% sideload cm-13.0-20151231-NIGHTLY-falcon.zip
-::cls
-echo entre no modo sideload!
-
-
-pause
-%camadb% sideload open_gapps-arm-6.0-mini-20151210.zip
-%camadb% reboot bootloader
-%camadb% wait-for-device
-%camfastboot% flash recovery philz_touch_6.58.7-falcon.img
-pause
+:DRIVER
+start .\drivers\drive\ADBDriverInstaller.exe
+if if %ad%==0 .\drivers\wget\bin\wget.exe http://adbdriver.com/upload/adbdriver.zip
+goto DRIVER!
