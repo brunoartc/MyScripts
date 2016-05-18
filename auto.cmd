@@ -283,9 +283,10 @@ if %ad%==0 echo.
 if %ad%==0 echo ------------------------------------------------------------------
 if %ad%==0 echo                             AVISO
 if %ad%==0 echo SELECIONE A OPCAO "Install zip/Aplly update" em seguida "Apply update/install zip from sideload"
-if %ad%==0 echo e o processo continuara automaticamente
+if %ad%==0 echo e precione enter
 if %ad%==0 echo ------------------------------------------------------------------
 if %ad%==0 echo.
+pause>nul
 %camadb% wait-for-device
 %camadb% sideload %cm%
 if %ad%==0 cls
@@ -294,8 +295,9 @@ if %ad%==0 echo ----------------------------------------------------------------
 if %ad%==0 echo                             AVISO
 if %ad%==0 echo AGUARDE O FINAL DA INSTALACAO, ATE DESAPARECER A OPCAO "Cancel sideload" e novamente
 if %ad%==0 echo SELECIONE A OPCAO "Install zip/Aplly update" em seguida "Apply update/install zip from sideload"
-if %ad%==0 echo e o processo continuara automaticamente
+if %ad%==0 echo e precione entrer
 if %ad%==0 echo ------------------------------------------------------------------
+pause>nul
 %camadb% wait-for-device
 %camadb% sideload %gapps%
 if %ad%==0 cls
