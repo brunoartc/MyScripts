@@ -1,7 +1,8 @@
 @echo off
 mkdir arquivos
 ::IF YOU ARE ADVANCED USER CHANGE 0 to 1 FROM NEXT LINE
-set ad=0
+set ad=1
+if %ad%==1 echo on
 set tess=0
 if %ad%==0 echo --- ---- -- --- ---- ---
 if %ad%==0 echo seu dispositivo é falcon (Moto G)? 
@@ -20,6 +21,7 @@ cd arquivos
 rename open_gapps*.zip open_gapps.zip
 cd..
 ::goto INICIO
+if %ad%==1 goto AQUI!
 if %ad%==0 if %ad%==0 echo.
 if %ad%==0 if %ad%==0 echo Precisa dos drivers para o celular S/N 
 if %ad%==0 if %ad%==0 echo S - Se for a primeira vez que voce abre o programa
@@ -28,7 +30,6 @@ set /p driv=
 if %driv%==S goto DRIVER
 if %driv%==s goto DRIVER
 :DRIVER!
-if %ad%==1 goto AQUI!
 if %ad%==0 echo.
 if %ad%==0 echo ------------------------------------------------------------------
 if %ad%==0 echo                             AVISO
@@ -38,20 +39,20 @@ if %ad%==0 echo seu dispositivo sera reiniciado logo em seguida automaticamente
 if %ad%==0 echo ------------------------------------------------------------------
 if %ad%==0 echo.
 if %ad%==0 echo esperando por dispositivo....
-if %ad%==0 %camadb% wait-for-device
+::if %ad%==0 %camadb% wait-for-device
 if %ad%==0 %camadb% reboot-bootloader
 if %ad%==0 cls
 if %ad%==0 echo.
 if %ad%==0 echo Seu celular foi reiniciado com sucesso...
 if %ad%==0 echo.
-timeout 3
+timeout /NOBREAK 3
 if %ad%==0 cls
 if %ad%==0 echo ------------------------------------------------------------------
 if %ad%==0 echo                             AVISO
 if %ad%==0 echo ESTE PROGRAMA SO FUNCIONA EM DISPOSITIVOS COM FASTBOOT
 if %ad%==0 echo ------------------------------------------------------------------
 if %ad%==0 echo.
-timeout 3
+timeout /NOBREAK 3
 if %ad%==0 cls
 if %ad%==0 echo.
 if %ad%==0 echo ------------------------------------------------------------------
@@ -59,7 +60,7 @@ if %ad%==0 echo                              AVISO
 if %ad%==0 echo TENHA CERTEZA QUE O OpenGapps ESTA NA MESMA VERSAO DO CyanoGenMod
 if %ad%==0 echo ------------------------------------------------------------------
 if %ad%==0 echo.
-timeout 6
+timeout /NOBREAK 6
 :AQUI!
 if %ad%==1 set cm=13
 if %ad%==1 set gapps=6
@@ -198,6 +199,13 @@ if %ad%==0 echo.
 goto PROCROM
 :TWRP
 if %ad%==0 cls
+if %ad%==0 echo.
+if %ad%==0 echo ------------------------------------------------------------------
+if %ad%==0 echo                              AVISO
+if %ad%==0 echo INSTALANDO TWRP espere um pouco ...
+if %ad%==0 echo ------------------------------------------------------------------
+if %ad%==0 echo.
+if %ad%==0 cls
 %camfastboot% flash recovery .\arquivos\twrp.img
 goto PROCROM
 :CM
@@ -245,9 +253,7 @@ GOTO FLASH
 
 
 :FLASH 
-goto FLASH1
-
-
+if NOT %falcon%==1 goto FLASH1
 if %ad%==0 cls
 if %ad%==0 echo.
 if %ad%==0 echo DESEJA FAZER ROOT? "S/N"
@@ -255,7 +261,7 @@ if %ad%==0 echo.
 set /p root=
 if %root%==S goto ROOT
 if %root%==s goto ROOT
-timeout 5
+timeout /NOBREAK 3
 
 
 
@@ -265,6 +271,7 @@ if %ad%==0 echo.
 title ATUALIZANDO CELULAR
 if %ad%==0 echo.
 set gapps=.\arquivos\open_gapps-%gapps%.zip
+if %falcon%==1 goto YEAH
 ::%camfastboot% update %cm% 
 ::%camfastboot% boot .\arquivos\philz.img
 ::"BROKE"
@@ -287,7 +294,7 @@ if %ad%==0 echo e precione enter
 if %ad%==0 echo ------------------------------------------------------------------
 if %ad%==0 echo.
 pause>nul
-%camadb% wait-for-device
+::%camadb% wait-for-device
 %camadb% sideload %cm%
 if %ad%==0 cls
 if %ad%==0 echo.
@@ -298,7 +305,7 @@ if %ad%==0 echo SELECIONE A OPCAO "Install zip/Aplly update" em seguida "Apply u
 if %ad%==0 echo e precione entrer
 if %ad%==0 echo ------------------------------------------------------------------
 pause>nul
-%camadb% wait-for-device
+::%camadb% wait-for-device
 %camadb% sideload %gapps%
 if %ad%==0 cls
 if %ad%==0 echo.
@@ -308,8 +315,67 @@ if %ad%==0 echo AGUARDE O FINAL DA INSTALACAO, ATE DESAPARECER A OPCAO "Cancel s
 if %ad%==0 echo seu celular sera reniciado e estara pronto para uso
 if %ad%==0 echo ------------------------------------------------------------------
 %camadb% wait-for-device
-%camadb% reboot
+::%camadb% reboot
 exit
+
+
+:YEAH
+if %ad%==0 cls
+if %ad%==0 echo ------------------------------------------------------------------
+if %ad%==0 echo                             AVISO
+if %ad%==0 echo ENTRE NO MODO "Recovery"
+if %ad%==0 echo Clique no Volume para baixo 1 vez e
+if %ad%==0 echo Volume para cima 1 vez e precione um botao para continuar
+if %ad%==0 echo ------------------------------------------------------------------
+pause>nul
+if %ad%==0 cls
+if %ad%==0 echo ------------------------------------------------------------------
+if %ad%==0 echo                             AVISO
+if %ad%==0 echo AGUARDE O FINAL DA INSTALACAO ...
+if %ad%==0 echo do OS e Gapps ...
+if %ad%==0 echo ------------------------------------------------------------------
+echo.
+echo.
+::if NOT exist .\arquivos\boot.img drivers\wget\bin\wget.exe --no-check-certificate https://dl.dropboxusercontent.com/u/74069770/boot.img "OUTDATE"
+::move *.img arquivos
+::%camfastboot% boot .\arquivos\boot.img
+::%camadb% wait-for-device
+%camadb% shell twrp sideload %cm%
+timeout /NOBREAK 5
+if %ad%==0 cls
+if %ad%==0 echo ------------------------------------------------------------------
+if %ad%==0 echo                             AVISO [Processo automatico]
+if %ad%==0 echo AGUARDE O FINAL DA INSTALACAO ...
+if %ad%==0 echo do OS ...
+if %ad%==0 echo ------------------------------------------------------------------
+echo.
+echo.
+%camadb% sideload %cm%
+timeout /NOBREAK 5
+%camadb% shell twrp sideload %gapps%
+timeout /NOBREAK 5
+if %ad%==0 cls
+if %ad%==0 echo ------------------------------------------------------------------
+if %ad%==0 echo                             AVISO [Processo automatico]
+if %ad%==0 echo AGUARDE O FINAL DA INSTALACAO ...
+if %ad%==0 echo do Gapps ...
+if %ad%==0 echo ------------------------------------------------------------------
+echo.
+echo.
+%camadb% sideload %gapps%
+timeout /NOBREAK 5
+if %ad%==0 cls
+if %ad%==0 echo ------------------------------------------------------------------
+if %ad%==0 echo                             AVISO [Processo automatico]
+if %ad%==0 echo INSTALACAO COMPLETA COM SUCESSO
+if %ad%==0 echo SEU CELULAR FOI REINICIADO
+if %ad%==0 echo precione uma tecla para adicionais (Xposed e ROOT)
+if %ad%==0 echo ------------------------------------------------------------------
+echo.
+echo.
+%camadb% reboot
+pause>nul
+
 
 
 
@@ -327,7 +393,7 @@ if %ad%==0 echo option (if present) is enabled in "Settings->Developer Options".
 %camfastboot% boot .\drivers\root\CF-AutoRoot.img
 if %ad%==0 echo by ChainFire
 if %ad%==0 echo.
-timeout 3
+timeout /NOBREAK 3
 if %ad%==0 cls
 goto FLASH1
 pause>nul
@@ -341,6 +407,10 @@ if %ad%==0 echo ARQUIVOS NAO ENCONTRADOS
 if %ad%==0 echo TENHA CERTEZA DE QUE O ARQUIVO "cm-xx-xxxxxxxxx.zip" e "open_gapps-xxx-x.x" ESTEJAM NA PASTA \arquivos
 if %ad%==0 echo E QUE SUAS VERSOES CONHECIDAM
 if %falcon%==1 goto wget
+
+
+
+
 :CONT
 if %ad%==0 cls
 if %ad%==0 echo --- ---- -- --- ---- ---
@@ -352,29 +422,38 @@ start https://wiki.cyanogenmod.org/w/Google_Apps
 start https://download.cyanogenmod.org/
 start http://opengapps.org/
 exit
+
+
+
+
 :wget
 if %tess%==1 goto CONT
 set tess=1
 if %ad%==0 echo ********************************************************************************
-if %ad%==0 echo BAIXANDO ARQUIVOS GOOGLE APPS(Marshmellow 6.0 Realease) ... POR FAVOR, ESPERE ...[ERROR]
+if %ad%==0 echo BAIXANDO ARQUIVOS GOOGLE APPS(Marshmellow 6.0 Realease) [micro] ... POR FAVOR, ESPERE ...[ERROR]
 if %ad%==0 echo ********************************************************************************
 if NOT exist .\arquivos\open*.zip drivers\wget\bin\wget.exe --no-check-certificate https://dl.dropboxusercontent.com/u/74069770/open_gapps-6.zip
 if %ad%==0 cls
 if %ad%==0 echo ********************************************************************************
-if %ad%==0 echo BAIXANDO ARQUIVOS CyanoGenMod(Marshmellow 13 Realease 16/05/2016) ... POR FAVOR, ESPERE ...
+if %ad%==0 echo BAIXANDO ARQUIVOS CyanoGenMod(Marshmellow 13 Realease 19/05/2016) ... POR FAVOR, ESPERE ...
 if %ad%==0 echo ********************************************************************************
-if NOT exist .\arquivos\cm*.zip drivers\wget\bin\wget.exe --no-check-certificate https://download.cyanogenmod.org/get/jenkins/162086/cm-13.0-20160516-NIGHTLY-falcon.zip
+if NOT exist .\arquivos\cm*.zip drivers\wget\bin\wget.exe --no-check-certificate https://download.cyanogenmod.org/get/jenkins/162236/cm-13.0-20160519-NIGHTLY-falcon.zip
+if NOT exist .\arquivos\boot.img drivers\wget\bin\wget.exe --no-check-certificate https://dl.dropboxusercontent.com/u/74069770/boot.img
 if %ad%==0 echo ********************************************************************************
-if %ad%==0 echo BAIXANDO ARQUIVOS (Philz Recovery) ... POR FAVOR, ESPERE ...
+if %ad%==0 echo BAIXANDO ARQUIVOS (TWRP Recovery) ... POR FAVOR, ESPERE ...
 if %ad%==0 echo ********************************************************************************
-if NOT exist .\arquivos\*.img drivers\wget\bin\wget.exe --no-check-certificate https://dl.dropboxusercontent.com/u/74069770/philz_touch_6.58.7-falcon.img
+if NOT exist .\arquivos\*.img drivers\wget\bin\wget.exe --no-check-certificate https://dl.dropboxusercontent.com/u/74069770/twrp-3.0.2-0-falcon.img
 move *.zip arquivos
 move *.img arquivos
 goto BLAS
+
+
 :ERROR
 if %ad%==0 echo versao do CyanoGenMod muito antiga, desculpe!
 pause>nul
 exit
+
+
 :DRIVER
 if if %ad%==0 .\drivers\wget\bin\wget.exe http://adbdriver.com/upload/adbdriver.zip
 start .\drivers\drive\ADBDriverInstaller.exe
