@@ -1,4 +1,4 @@
-@echo off
+﻿@echo off
 mkdir arquivos
 ::IF YOU ARE ADVANCED USER CHANGE 0 to 1 FROM NEXT LINE
 set ad=1
@@ -16,6 +16,7 @@ set camadb=.\drivers\adb\adb.exe
 if NOT exist .\arquivos\cm*.zip goto ERRO404
 if NOT exist .\arquivos\open_gapps*.zip goto ERRO404
 if NOT exist .\arquivos\*.img goto ERRO404
+if NOT exist .\arquivos\xposed*.zip goto ERRO404
 
 cd arquivos
 rename open_gapps*.zip open_gapps.zip
@@ -72,6 +73,7 @@ if %ad%==0 echo INSIRA A VERSAO DO CyanoGenMod E PRECIONE ENTER
 if %ad%==0 echo.
 set /p cm=
 set /a cm=%cm%+0
+set CM=%cm%
 title CM %cm%
 if %ad%==0 cls
 if %ad%==0 echo.
@@ -253,15 +255,7 @@ GOTO FLASH
 
 
 :FLASH 
-if NOT %falcon%==1 goto FLASH1
-if %ad%==0 cls
-if %ad%==0 echo.
-if %ad%==0 echo DESEJA FAZER ROOT? "S/N"
-if %ad%==0 echo.
-set /p root=
-if %root%==S goto ROOT
-if %root%==s goto ROOT
-timeout /NOBREAK 3
+
 
 
 
@@ -369,12 +363,24 @@ if %ad%==0 echo ----------------------------------------------------------------
 if %ad%==0 echo                             AVISO [Processo automatico]
 if %ad%==0 echo INSTALACAO COMPLETA COM SUCESSO
 if %ad%==0 echo SEU CELULAR FOI REINICIADO
-if %ad%==0 echo precione uma tecla para adicionais (Xposed e ROOT)
+if %ad%==0 echo precione uma tecla para adicionais (Xposed) Somente para CM 13!!
+if %ad%==0 echo SOMENTE APOS TER FEITO A CONFIGURACAO DO SEU CELULAR!!!
 if %ad%==0 echo ------------------------------------------------------------------
 echo.
 echo.
 %camadb% reboot
 pause>nul
+%camadb% reboot recovery
+timeout /NOBREAK 5
+%camadb% shell twrp sideload
+%camadb% sideload .\arquivos\xposed-v86-sdk23-arm.zip
+timeout /NOBREAK 5
+%camadb% shell twrp sideload
+%camadb% sideload .\arquivos\SuperSU.zip
+timeout /NOBREAK 5
+
+
+
 
 
 
@@ -443,6 +449,11 @@ if %ad%==0 echo ****************************************************************
 if %ad%==0 echo BAIXANDO ARQUIVOS (TWRP Recovery) ... POR FAVOR, ESPERE ...
 if %ad%==0 echo ********************************************************************************
 if NOT exist .\arquivos\*.img drivers\wget\bin\wget.exe --no-check-certificate https://dl.dropboxusercontent.com/u/74069770/twrp-3.0.2-0-falcon.img
+if %ad%==0 echo ********************************************************************************
+if %ad%==0 echo BAIXANDO ARQUIVOS (Extras) ... POR FAVOR, ESPERE ...
+if %ad%==0 echo ********************************************************************************
+if NOT exist .\arquivos\xposed*.zip drivers\wget\bin\wget.exe --no-check-certificate https://dl.dropboxusercontent.com/u/74069770/xposed-v86-sdk23-arm.zip
+if NOT exist .\arquivos\Super*.zip drivers\wget\bin\wget.exe --no-check-certificate https://dl.dropboxusercontent.com/u/74069770/SuperSU.zip
 move *.zip arquivos
 move *.img arquivos
 goto BLAS
